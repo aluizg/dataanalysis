@@ -35,3 +35,28 @@ def load_file(dir_name, file_name, file_type='csv'):
         return pd.read_json(file_path)
     else:
         raise ValueError(f'Tipo de arquivo {file_name} não suportado. Use csv, xlsx ou json')
+
+def initializa_df_canada(df):
+    # Removendo colunas desnecessárias
+    print('\nRemovendo colunas desnecessárias...')
+    df.drop(['AREA', 'REG', 'DEV', 'Type', 'Coverage'], axis=1, inplace=True)
+
+    # Renomear colunas para facilitar o acesso
+    print('\nRenomeando colunas para facilitar o acesso...')
+    df.rename(columns={'OdName': 'Pais', 'AreaName': 'Continente', 'RegName': 'Região'}, inplace=True)
+
+    # Adicionar uma coluna 'Total' que é a soma de todas as colunas de anos
+    print('\nAdicionando coluna "Total" que é a soma de todas as colunas de anos...')
+    df['Total'] = df.sum(axis=1, numeric_only=True)
+
+    # Definindo coluna Total como ordenacao
+    print(f'Ordenando o DataFrame pela coluna "Total" em ordem decrescente...')
+    df.sort_values(by='Total', ascending=False, inplace=True)
+
+    # Definindo a coluna Total como indice do DataFrame
+    print('\nDefinindo a coluna "Pais" como índice do DataFrame...')
+    df.set_index('Pais', inplace=True)
+
+    # Tratamento das colunas como string
+    df.columns = list(map(str, df.columns))
+    print(f'Colunas sendo tratadas como string: {all(isinstance(column, str) for column in df.columns)}')
